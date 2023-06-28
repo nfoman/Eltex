@@ -1,0 +1,13 @@
+#include"calculater.h"
+#include<stdlib.h>
+#include<stdio.h>
+
+
+int main(){
+
+
+graphic();
+
+
+
+}
