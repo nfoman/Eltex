@@ -1,3 +1,5 @@
+#include <fcntl.h>
+#include <sys/stat.h>
 #include <termios.h>
 #include <sys/ioctl.h> //для обработки сигналов
 #include <signal.h> //для соединения сигнала и функции-обработчика
@@ -10,11 +12,16 @@
 #include <sys/dir.h>
 #include<unistd.h>
 #include<sys/wait.h>
+#include <pthread.h>
+#include <time.h>
+
+
 #define _BSD_SOURCE  1
 #define _SVID_SOURCE 1
 #define _GNU_SOURCE
-
+pthread_mutex_t mutexes[2];
 WINDOW *b;
+struct stat buf; 
 void sig_winch(int signo)
 {
 	struct winsize size;
@@ -39,15 +46,46 @@ void printdir2(char *path){
     printw("~~~~~~~~~~~~~~~~~~~~~~~\n%s\n",path);
     move(0,0);
 }
+void copy(char* namek){
+    // pthread_mutex_lock(&mutexes[1]);
+    clear();
+    
+    char *namefile=malloc(100);
+    // printw("enter name file for copy ");
+    // scanw("%s ",namefile);
+    
+    int fd=open(namek,O_RDWR);
+    printw("%d",fd);
+   
+    char *str=malloc(10000);
+    stat(namek, &buf);
+    long int bytes;
+    bytes = buf.st_size;
+    read(fd,str,bytes);
+     
+    // printw("%s",str);
+    sync();
+    // free(namefile);
+    
+    printw("enter new name file ");
+    scanw("%s ",namefile);
+    int fp;
+    fp = open(namefile, O_WRONLY |O_CREAT | O_EXCL, 0666);
+    
+    write(fp,str,bytes);
+    sync();
+    // pthread_mutex_unlock(&mutexes[1]);
+
+}
 
 int main(){
-    initscr();
     int c;
     pid_t jopa;
     int y=1;
     int x=1;
     int size=255;
-    char *path=malloc(size);
+    char *path=malloc(size);   
+    initscr();
     strcpy(path,".");
     keypad(stdscr,1);
     signal(SIGWINCH, sig_winch);
@@ -58,7 +96,7 @@ int main(){
     bkgd(COLOR_PAIR(1));
     refresh();
     printdir2(path);
-       
+
     while ((c=getch())!=27){
         clear();
         refresh();
@@ -71,6 +109,19 @@ int main(){
             y++;
             wmove(stdscr,y,x);
         } 
+        if(c=='c'){
+            size=size+strlen(namelist[y]->d_name)+1;
+            
+            char *namek=malloc(500);
+            strcpy(namek,path);
+            strcat(namek,"/");
+            strcat(namek,namelist[y]->d_name);
+            copy(namek);
+            free(namek);
+            y=0;
+            x=0;
+        }
+
         if(c=='\n'||c==KEY_ENTER){
             if (namelist[y]->d_type==DT_DIR)
             {
