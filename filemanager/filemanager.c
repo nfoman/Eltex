@@ -47,40 +47,26 @@ void printdir2(char *path){
     move(0,0);
 }
 void copy(char* namek){
-    // pthread_mutex_lock(&mutexes[1]);
     clear();
-    
     char *namefile=malloc(100);
-    // printw("enter name file for copy ");
-    // scanw("%s ",namefile);
-    
     int fd=open(namek,O_RDWR);
-    printw("%d",fd);
-   
-    char *str=malloc(10000);
     stat(namek, &buf);
     long int bytes;
     bytes = buf.st_size;
+    char *str=malloc(bytes);
     read(fd,str,bytes);
-     
-    // printw("%s",str);
     sync();
-    // free(namefile);
-    
     printw("enter new name file ");
     scanw("%s ",namefile);
     int fp;
     fp = open(namefile, O_WRONLY |O_CREAT | O_EXCL, 0666);
-    
     write(fp,str,bytes);
     sync();
-    // pthread_mutex_unlock(&mutexes[1]);
 
 }
 
 int main(){
     int c;
-    pid_t jopa;
     int y=1;
     int x=1;
     int size=255;
