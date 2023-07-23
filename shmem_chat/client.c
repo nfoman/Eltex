@@ -28,8 +28,23 @@ int main(){
     shmid = shmget(SHM_ID, 1, 0);
    
     key = ftok("serv.c",'m');
+    if(key==-1){
+        perror("ftok");
+        exit(EXIT_FAILURE);
+    }
     id =shmget (key,SIZE,0);
+    if (id==-1)
+    {
+        perror("shmget");
+        exit(EXIT_FAILURE);
+    }
+    
     msg = (struct message *)shmat(id, NULL, 0);
+    if (msg==NULL)
+    {
+        perror("shmatt");
+        exit(EXIT_FAILURE);
+    }
     char str[100];
     printf("Enter your name :");
     scanf("%s",name);

@@ -11,9 +11,6 @@
 #include <sys/msg.h>
 #include <malloc.h>
 #include <sys/wait.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
 #include"server.h"
 #define PUSTO 0
 #define PIWI 1
@@ -30,12 +27,24 @@ int main(){
     message *msg;
     
     key = ftok("serv.c",'m');
-    
+    if(key==-1){
+        perror("ftok");
+        exit(EXIT_FAILURE);
+    }
     id =shmget (key,SIZE, IPC_CREAT | 0666);
+    if (id==-1)
+    {
+        perror("shmget");
+        exit(EXIT_FAILURE);
+    }
     // char *arr;
     // arr=malloc(SIZE);
     msg = (struct message *)shmat(id, NULL, 0);
-    
+    if (msg==NULL)
+    {
+        perror("shmatt");
+        exit(EXIT_FAILURE);
+    }
     msg->type=PUSTO;
     while (1)
     {
