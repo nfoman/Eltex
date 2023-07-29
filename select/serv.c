@@ -18,6 +18,7 @@ void *handler(void*arg){
     // printf("%d %d\n",arrfd[i], i);
     while (1)
     {
+
         if(id.check==0){
         check = recvfrom(id.fd,bufik,255,0,(struct sockaddr*)&client,&size);
         if (check==-1){
@@ -27,7 +28,7 @@ void *handler(void*arg){
         printf("%s\n",bufik);
         }
         if(id.check==1){
-        check = recv(id.fd,bufik,strlen(bufik)+1,0);
+        check = recv(id.fd,bufik,100,0);
         if (check==-1){
             perror("error in recv thread()");
             exit(EXIT_FAILURE);

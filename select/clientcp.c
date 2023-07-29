@@ -13,19 +13,21 @@ int main(){
 		perror("error in socket()");
 		exit(EXIT_FAILURE);
 	}
-    
-    scanf("%s",bufik);
-    int check =connect(fd,(const struct sockaddr *) &serv,sizeof(serv));
-    if(check==-1){
-        perror("error in connect()");
-		exit(EXIT_FAILURE);
-    }
+    while(1){
 
-    int ret = send(fd, bufik, strlen(bufik), 0);
-   
-    if (ret == -1) {
-        perror("error in send()");
-        exit(EXIT_FAILURE);
+        scanf("%s",bufik);
+        int check =connect(fd,(const struct sockaddr *) &serv,sizeof(serv));
+        if(check==-1){
+            perror("error in connect()");
+            exit(EXIT_FAILURE);
+        }
+
+        int ret = send(fd, bufik, strlen(bufik), 0);
+
+        if (ret == -1) {
+            perror("error in send()");
+            exit(EXIT_FAILURE);
+        }
     }
         
 
